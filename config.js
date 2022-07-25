@@ -1,7 +1,7 @@
 "use strict";
 
 const dotenv = require("dotenv");
-const assert = require("assert");
+// const assert = require("assert");
 
 dotenv.config();
 
@@ -19,8 +19,8 @@ const {
   JWT_AUTH_SECRET_TOKEN,
 } = process.env;
 
-assert(PORT, "PORT is Required");
-assert(HOST, "HOST is Required");
+// assert(PORT, "PORT is Required");
+// assert(HOST, "HOST is Required");
 
 module.exports = {
   port: PORT,
