@@ -6,7 +6,7 @@ const express = require("express");
 
 const router = express.Router();
 
-router.post("/add-client", addParentClient);
+router.post("/add-parent-client", addParentClient);
 router.get("/parent-clients/:walletAddress", getParentClient);
 
 module.exports = router;

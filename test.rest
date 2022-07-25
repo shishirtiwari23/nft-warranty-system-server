@@ -1,16 +1,64 @@
-GET http://localhost:3001/api/users/0xbEc53EBdf7833B9fdfd874752f287d578d2sdf3e87
-Authorization:Bearer dfsdfsdfsd
-
-###
-
-GET http://localhost:3001/api/users/0xbEc53EBdf7833B9fdfd874752fdf2287d5781d2sdf3e87
-
-###
-
-POST http://localhost:3001/api/login
-
+### ParentClient API-------------------------------------------------- 
+POST http://localhost:3001/api/add-parent-client
 Content-Type: application/json
 
 {
-    "walletAddress":"0xbEc53EBdf7833B9fdfd874752f287d578d2sdf3e87"
+    "walletAddress":"0xbEc53EBdf7833B9fdfd87472f2jggj87d578d2sdf3e87",
+    "contractAddress":"0xbEc53EBdf7833B9fdfd87472dfdff287d578d2sdf3e87"
 }
+//Done
+
+
+###
+GET http://localhost:3001/api/parent-clients/0xbEc53EBdf7833B9fdfd87472f2jggj87d578d2sdf3e87
+//Done
+
+### ChildClient API---------------------------------------------------
+POST http://localhost:3001/api/add-child-client
+Content-Type: application/json
+
+{
+    "walletAddress":"0xbEc53EBdf7833B9fdfd87472f2jggj87d578d2sdf3e87",
+    "child":{
+            "id":"32s342s5",
+            "contractAddress":"0xbEc53EBdf78x33B9d87475222sdd5781d265A3e87",
+            "walletAddress":"0xbEc53EBdf78x33B9d87475222sdd5781d265A3e"
+        }
+        
+}
+//Done
+
+### USER API-----------------------------------------------------------
+
+POST http://localhost:3001/api/add-user
+Content-Type: application/json
+
+{
+    "walletAddress":"0xbEc53EBdf7833B9fdfd87472f287d578d2sdf3e87"
+}
+// Done
+
+### 
+POST http://localhost:3001/api/login
+Content-Type: application/json
+
+{
+    "walletAddress":"0xbEc53EBdf7833B9fdfd87472f287d578d2sdf3e87"
+}
+
+
+### 
+POST http://localhost:3001/api/add-token
+Content-Type: application/json
+
+{
+    
+    "id":"tokdfe123",
+    "URI":"URI123123",
+    "walletAddress":"0xbEc53EBdf7833B9fdfd87472f287d578d2sdf3e87",
+    "contractAddress":"0xbEc53EBdf78x33B9d8747522s2sdd5781d265A3e87"
+    
+}
+//Done
+
+###

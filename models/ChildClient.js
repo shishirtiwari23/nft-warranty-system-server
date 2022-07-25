@@ -23,4 +23,4 @@ const ChildClient = {
   // children:'children'
 };
 
-module.exports = ChildClient;
+module.exports = { ChildClient };

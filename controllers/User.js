@@ -46,6 +46,8 @@ async function login(req, res) {
     const {
       body: { walletAddress },
     } = req;
+    if (!walletAddress)
+      return getResponse(res, 400, messages.error.required, collections.USERS);
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress); // Why do i have to put an await here
     if (!userSnapshot.exists)
       return getResponse(
@@ -74,6 +76,7 @@ async function addToken(req, res) {
     if (!URI || !id || !contractAddress || !walletAddress)
       return getResponse(res, 400, messages.error.required, collections.USERS);
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
+
     if (!userSnapshot.exists)
       return getResponse(
         res,
@@ -82,7 +85,6 @@ async function addToken(req, res) {
         collections.USERS
       );
     const oldData = userSnapshot.data();
-
     const oldContractSpecificTokens = oldData.tokens[contractAddress] || [];
 
     oldContractSpecificTokens?.forEach((token) => {
