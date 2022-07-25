@@ -2,6 +2,11 @@ const jwt = require("jsonwebtoken");
 const config = require("../config");
 const db = require("../db");
 const { getMessage, messages } = require("./constants");
+const { key } = require("firebase-key");
+
+function generateToken() {
+  return key();
+}
 
 function signToken(obj) {
   return jwt.sign(obj, config.JWTAuthSecretToken);
@@ -35,4 +40,5 @@ module.exports = {
   getResponse,
   setDoc,
   authenticateJWT,
+  generateToken,
 };

@@ -3,25 +3,19 @@ const ParentClient = {
   walletAddress: "walletAddress",
   additionalUsers: "additionalUsers",
   contractAddress: "contractAddress",
-  validity: {
-    from: "from",
-    to: "to",
-  },
-  plans: {
-    basic: {
-      CPS: "CPS",
-      apiTokenLimit: "apiTokenLimit",
-    },
-    pro: {
-      CPS: "CPS",
-      apiTokenLimit: "apiTokenLimit",
-    },
-    premium: {
-      CPS: "CPS",
-      apiTokenLimit: "apiTokenLimit",
-    },
-  },
+  validity: "validity", //Validity
+  plan: "plan", //Plan
   children: "children",
 };
 
-module.exports = ParentClient;
+const Validity = {
+  from: "from",
+  to: "to",
+};
+
+const Plan = {
+  CPS: "CPS",
+  APITokenLimit: "APITokenLimit",
+};
+
+module.exports = { ParentClient, Validity, Plan };

@@ -1,6 +1,40 @@
 const messages = {
   error: {
     default: { message: "Some Error Occured" },
+    parentClient: {
+      add: {
+        message: "Unable to add ParentClient",
+      },
+      delete: {
+        message: "Unable to delete ParentClient",
+      },
+      notFound: {
+        message: "ParentClient not found",
+      },
+      exist: {
+        message: "ParentClient already exists",
+      },
+      update: {
+        message: "Unable to update ParentClient",
+      },
+    },
+    childClient: {
+      add: {
+        message: "Unable to add ChildClient",
+      },
+      delete: {
+        message: "Unable to delete ChildClient",
+      },
+      notFound: {
+        message: "ChildClient not found",
+      },
+      exist: {
+        message: "ChildClient already exists",
+      },
+      update: {
+        message: "Unable to update ChildClient",
+      },
+    },
     user: {
       notFound: {
         message: "User not found",
@@ -24,7 +58,7 @@ const messages = {
       },
     },
     required: {
-      message: "Required fields are not missing",
+      message: "Required fields are missing",
     },
     token: {
       add: {
@@ -59,10 +93,41 @@ const messages = {
       update: {
         message: "User updated successfully",
       },
+      exist: {
+        message: "User found",
+      },
     },
     token: {
       add: {
         message: "Token added successfully",
+      },
+    },
+    parentClient: {
+      add: {
+        message: "ParentClient added successfully",
+      },
+      delete: {
+        message: "ParentClient deleted successfully",
+      },
+      exist: {
+        message: "ParentClient found",
+      },
+      update: {
+        message: "ParentClient updated successfully",
+      },
+    },
+    childClient: {
+      add: {
+        message: "ChildClient added successfully",
+      },
+      delete: {
+        message: "ChildClient deleted successfully",
+      },
+      exist: {
+        message: "ChildClient found",
+      },
+      update: {
+        message: "ChildClient updated successfully",
       },
     },
   },
