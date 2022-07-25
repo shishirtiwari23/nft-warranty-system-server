@@ -4,7 +4,7 @@ const {
   signToken,
   getResponse,
   getSnapshot,
-  createDoc,
+  setDoc,
 } = require("../utils/functions");
 const db = require("../db");
 const { messages, getMessage, collections } = require("../utils/constants");
@@ -19,12 +19,7 @@ async function addUser(req, res) {
 
     if (!walletAddress)
       // body should contain both walletAddress and contractAddress
-      return getResponse(
-        res,
-        500,
-        messages.error.user.required,
-        collections.USERS
-      );
+      return getResponse(res, 500, messages.error.required, collections.USERS);
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
     if (userSnapshot.exists)
       // checking if user already exists
@@ -37,9 +32,9 @@ async function addUser(req, res) {
 
     const newUser = {
       walletAddress,
-      tokens: [],
+      tokens: {},
     };
-    await createDoc(collections.USERS, walletAddress, newUser);
+    await setDoc(collections.USERS, walletAddress, newUser);
     getResponse(res, 200, messages.success.user.add, collections.USERS);
   } catch (error) {
     getResponse(res, 400, messages.error.user.add, collections.USERS);
@@ -68,9 +63,63 @@ async function login(req, res) {
   }
 }
 
+async function addToken(req, res) {
+  try {
+    let duplicate = false;
+    const { body } = req;
+    if (!body)
+      return getResponse(res, 400, messages.error.required, collections.USERS);
+    const { URI, id, contractAddress, walletAddress } = body;
+
+    if (!URI || !id || !contractAddress || !walletAddress)
+      return getResponse(res, 400, messages.error.required, collections.USERS);
+    const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
+    if (!userSnapshot.exists)
+      return getResponse(
+        res,
+        400,
+        messages.error.user.notFound,
+        collections.USERS
+      );
+    const oldData = userSnapshot.data();
+
+    const oldContractSpecificTokens = oldData.tokens[contractAddress] || [];
+
+    oldContractSpecificTokens?.forEach((token) => {
+      if (token.id == id) {
+        duplicate = true;
+      }
+    });
+    if (duplicate)
+      return getResponse(
+        res,
+        400,
+        messages.error.token.exist,
+        collections.USERS
+      );
+    console.log(oldData.tokens);
+
+    const newTokens = {
+      ...oldData.tokens,
+      [contractAddress]: [...oldContractSpecificTokens, { id: id, URI: URI }],
+    };
+
+    const newUserData = {
+      ...oldData,
+      tokens: newTokens,
+    };
+
+    await setDoc(collections.USERS, walletAddress, newUserData);
+    getResponse(res, 200, messages.success.token.add, collections.USERS);
+  } catch (error) {
+    getResponse(res, 400, messages.error.token.add, collections.USERS);
+  }
+}
+
 module.exports = {
   addUser,
   login,
+  addToken,
 };
 
 // async function getUser(req, res) {

@@ -3,4 +3,9 @@ const User = {
   tokens: "tokens",
 };
 
-module.exports = { User };
+const Token = {
+  id: "id",
+  URI: "URI",
+};
+
+module.exports = { User, Token };

@@ -16,13 +16,22 @@ const messages = {
         message: "Unable to update user",
       },
       exist: {
-        message: "User Already Exists",
+        message: "User already exists",
       },
-      required: {
-        message: "Required fields are not sent",
-      },
+
       get: {
         message: "Unable to get user",
+      },
+    },
+    required: {
+      message: "Required fields are not missing",
+    },
+    token: {
+      add: {
+        message: "Unable to Add token",
+      },
+      exist: {
+        message: "Token already exists",
       },
     },
     auth: {
@@ -49,6 +58,11 @@ const messages = {
       },
       update: {
         message: "User updated successfully",
+      },
+    },
+    token: {
+      add: {
+        message: "Token added successfully",
       },
     },
   },

@@ -18,7 +18,7 @@ function getResponse(res, statusCode, des, collection) {
   return res.status(statusCode).json(getMessage(des, collection));
 }
 
-async function createDoc(collection, id, value) {
+async function setDoc(collection, id, value) {
   await db.collection(collection).doc(id).set(value);
 }
 
@@ -33,6 +33,6 @@ module.exports = {
   signToken,
   getSnapshot,
   getResponse,
-  createDoc,
+  setDoc,
   authenticateJWT,
 };
