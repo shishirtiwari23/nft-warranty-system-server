@@ -1,16 +1,17 @@
 const express = require("express");
-const {
-  addUser,
-  getAllUsers,
-  getUser,
-  updateUser,
-} = require("../controllers/User");
+const { addUser, login } = require("../controllers/User");
+const { authenticateJWT } = require("../utils/functions");
 
 const router = express.Router();
 
+router.post("/login", login);
 router.post("/add-user", addUser);
-router.get("/users", getAllUsers);
-router.get("/users/:id", getUser);
-router.post("/users/:id", updateUser);
+
+// router.get("/users/:walletAddress", authenticateJWT, getUser);
+
+// router.post("/add-user", addUser);
+// router.get("/users", getAllUsers);
+// router.get("/users/:id", getUser);
+// router.patch("/users/:id", updateUser);
 
 module.exports = router;

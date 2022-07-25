@@ -9,11 +9,25 @@ const messages = {
         invalid: { message: "Invalid id" },
         undefined: { message: "id is undefined" },
       },
-      added: {
-        message: "Failed to add user",
+      add: {
+        message: "Unable to add user",
       },
       update: {
-        message: "Failed to update user",
+        message: "Unable to update user",
+      },
+      exist: {
+        message: "User Already Exists",
+      },
+      required: {
+        message: "Required fields are not sent",
+      },
+      get: {
+        message: "Unable to get user",
+      },
+    },
+    auth: {
+      token: {
+        message: "Invalid Token",
       },
     },
     fetch: {
@@ -30,10 +44,10 @@ const messages = {
       message: "Success",
     },
     user: {
-      added: {
+      add: {
         message: "User added successfully",
       },
-      updated: {
+      update: {
         message: "User updated successfully",
       },
     },
@@ -50,6 +64,8 @@ function getMessage(obj, collectionName) {
 
 const collections = {
   USERS: "USERS",
+  PARENT_CLIENTS: "PARENT_CLIENTS",
+  CHILD_CLIENTS: "CHILD_CLIENTS",
 };
 
 module.exports = {

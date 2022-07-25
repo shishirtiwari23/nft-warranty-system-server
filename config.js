@@ -16,6 +16,7 @@ const {
   MESSAGING_SENDER_ID,
   APP_ID,
   MESUREMENT_ID,
+  JWT_AUTH_SECRET_TOKEN,
 } = process.env;
 
 assert(PORT, "PORT is Required");
@@ -25,6 +26,7 @@ module.exports = {
   port: PORT,
   host: HOST,
   hostUrl: HOST_URL,
+
   firebaseConfig: {
     apiKey: API_KEY,
     authDomain: AUTH_DOMAIN,
@@ -34,4 +36,5 @@ module.exports = {
     appId: APP_ID,
     measurementId: MESUREMENT_ID,
   },
+  JWTAuthSecretToken: JWT_AUTH_SECRET_TOKEN,
 };

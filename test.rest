@@ -1,0 +1,16 @@
+GET http://localhost:3001/api/users/0xbEc53EBdf7833B9fdfd874752f287d578d2sdf3e87
+Authorization:Bearer dfsdfsdfsd
+
+###
+
+GET http://localhost:3001/api/users/0xbEc53EBdf7833B9fdfd874752fdf2287d5781d2sdf3e87
+
+###
+
+POST http://localhost:3001/api/login
+
+Content-Type: application/json
+
+{
+    "walletAddress":"0xbEc53EBdf7833B9fdfd874752f287d578d2sdf3e87"
+}

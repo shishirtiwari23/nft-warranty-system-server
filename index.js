@@ -2,18 +2,21 @@ const express = require("express");
 const cors = require("cors");
 // const bodyParser = require("body-parser");
 const config = require("./config");
-const UserRoutes = require("./routes/User");
+const { User } = require("./routes");
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+// app.use(cors({ exposedHeaders: "Authorization" }));
 // app.use(bodyParser.json());
 
-app.use("/api", UserRoutes);
+app.use("/api", User);
 
 app.use((req, res, next) => {
-  const error = new Error("Route Not Found, Check Your Requested URL");
+  const error = new Error(
+    "Route Not Found, Check Your Requested URL and Request Type"
+  );
   error.status = 404;
   res.json({
     error: {
