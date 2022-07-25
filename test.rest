@@ -30,7 +30,7 @@ Content-Type: application/json
 
 ### USER API-----------------------------------------------------------
 
-POST http://localhost:3001/api/add-user
+POST https://nft-warranty-system-server.herokuapp.com/api/add-user
 Content-Type: application/json
 
 {

@@ -22,19 +22,20 @@ const {
 // assert(PORT, "PORT is Required");
 // assert(HOST, "HOST is Required");
 
+const firebaseConfig = {
+  apiKey: "AIzaSyAk1zx-B4ixt9txFnPdXhGK4Lso2VIF24w",
+  authDomain: "nft-warranty-system-server.firebaseapp.com",
+  projectId: "nft-warranty-system-server",
+  storageBucket: "nft-warranty-system-server.appspot.com",
+  messagingSenderId: "285763757743",
+  appId: "1:285763757743:web:2caf17007c65eacf63d65a",
+  measurementId: "G-DCH0L38WC6",
+};
+
 module.exports = {
   port: PORT,
   host: HOST,
   hostUrl: HOST_URL,
-
-  firebaseConfig: {
-    apiKey: API_KEY,
-    authDomain: AUTH_DOMAIN,
-    projectId: PROJECT_ID,
-    storageBucket: STORAGE_BUCKET,
-    messagingSenderId: MESSAGING_SENDER_ID,
-    appId: APP_ID,
-    measurementId: MESUREMENT_ID,
-  },
+  firebaseConfig,
   JWTAuthSecretToken: JWT_AUTH_SECRET_TOKEN,
 };
