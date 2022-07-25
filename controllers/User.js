@@ -12,18 +12,15 @@ const { messages, getMessage, collections } = require("../utils/constants");
 async function addUser(req, res) {
   try {
     const { body } = req;
-    console.log({ body });
     if (!body)
       // body can't be empty
       return getResponse(res, 500, messages.error.user.add, collections.USERS);
     const { walletAddress } = body;
-    console.log({ walletAddress });
 
     if (!walletAddress)
       // body should contain both walletAddress and contractAddress
       return getResponse(res, 500, messages.error.required, collections.USERS);
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
-    console.log(userSnapshot.exists);
 
     if (userSnapshot.exists)
       // checking if user already exists
