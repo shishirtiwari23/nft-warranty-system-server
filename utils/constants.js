@@ -133,11 +133,19 @@ const messages = {
   },
 };
 
-function getMessage(obj, collectionName) {
-  const newObj = {
-    message:
-      obj.message + (collectionName ? ", collection:" + collectionName : ""),
-  };
+function getMessage(obj, collectionName, resData) {
+  let newObj;
+  if (!resData)
+    newObj = {
+      message:
+        obj.message + (collectionName ? ", collection:" + collectionName : ""),
+    };
+  else
+    newObj = {
+      message:
+        obj.message + (collectionName ? ", collection:" + collectionName : ""),
+      resData,
+    };
   return newObj;
 }
 

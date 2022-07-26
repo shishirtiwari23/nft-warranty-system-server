@@ -26,7 +26,7 @@ async function addUser(req, res) {
       // checking if user already exists
       return getResponse(
         res,
-        400,
+        200,
         messages.error.user.exist,
         collections.USERS
       );

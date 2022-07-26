@@ -76,9 +76,10 @@ async function addChildClient(req, res) {
     setDoc(collections.PARENT_CLIENTS, parentWalletAddress, newParentDoc);
     getResponse(
       res,
-      200,
+      210,
       messages.success.childClient.add,
-      collections.PARENT_CLIENTS
+      collections.PARENT_CLIENTS,
+      newChildren[id]
     );
   } catch (errror) {
     getResponse(

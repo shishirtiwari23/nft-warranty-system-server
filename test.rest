@@ -1,5 +1,5 @@
 ### ParentClient API-------------------------------------------------- 
-POST http://localhost:3001/api/add-parent-client
+POST https://nft-warranty-system-server.herokuapp.com/api/add-parent-client
 Content-Type: application/json
 
 {
@@ -10,17 +10,17 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:3001/api/parent-clients/0xbEc53EBdf7833B9fdfd87472f2jggj87d578d2sdf3e87
+GET https://nft-warranty-system-server.herokuapp.com/api/parent-clients/0xbEc53EBdf7833B9fdfd87472f2jggj87d578d2sdf3e87
 //Done
 
 ### ChildClient API---------------------------------------------------
-POST http://localhost:3001/api/add-child-client
+POST https://nft-warranty-system-server.herokuapp.com/api/add-child-client
 Content-Type: application/json
 
 {
     "walletAddress":"0xbEc53EBdf7833B9fdfd87472f2jggj87d578d2sdf3e87",
     "child":{
-            "id":"32s342s5",
+            "id":"32ss342s5",
             "contractAddress":"0xbEc53EBdf78x33B9d87475222sdd5781d265A3e87",
             "walletAddress":"0xbEc53EBdf78x33B9d87475222sdd5781d265A3e"
         }
@@ -39,7 +39,7 @@ Content-Type: application/json
 // Done
 
 ### 
-POST http://localhost:3001/api/login
+POST https://nft-warranty-system-server.herokuapp.com/api/login
 Content-Type: application/json
 
 {
@@ -48,12 +48,12 @@ Content-Type: application/json
 
 
 ### 
-POST http://localhost:3001/api/add-token
+POST https://nft-warranty-system-server.herokuapp.com/api/add-token
 Content-Type: application/json
 
 {
     
-    "id":"tokdfe123",
+    "id":"tokddsdsfde123",
     "URI":"URI123123",
     "walletAddress":"0xbEc53EBdf7833B9fdfd87472f287d578d2sdf3e87",
     "contractAddress":"0xbEc53EBdf78x33B9d8747522s2sdd5781d265A3e87"
@@ -62,3 +62,5 @@ Content-Type: application/json
 //Done
 
 ###
+
+

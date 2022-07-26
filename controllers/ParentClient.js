@@ -55,9 +55,10 @@ async function addParentClient(req, res) {
     await setDoc(collections.PARENT_CLIENTS, walletAddress, newClient);
     getResponse(
       res,
-      200,
+      210,
       messages.success.parentClient.add,
-      collections.PARENT_CLIENTS
+      collections.PARENT_CLIENTS,
+      newClient.APIToken
     );
   } catch (error) {
     getResponse(
