@@ -1,4 +1,5 @@
 const ParentClient = {
+  name: "name",
   APIToken: "APIToken",
   walletAddress: "walletAddress",
   additionalUsers: "additionalUsers",

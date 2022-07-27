@@ -19,9 +19,7 @@ async function getSnapshot(collection, id) {
 function getResponse(res, statusCode, des, collection, resData) {
   if (statusCode == 200) return res.status(statusCode).json({ data: des });
   if (!statusCode && !des) return res.json();
-  console.log(resData);
   if (!statusCode) return res.json(getMessage(des, collection, resData));
-
   return res.status(statusCode).json(getMessage(des, collection, resData));
 }
 

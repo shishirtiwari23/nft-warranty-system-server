@@ -6,6 +6,7 @@ const {
   getSnapshot,
 } = require("../utils/functions");
 const { ParentClient, Validity, Plan } = require("../models");
+const { key } = require("firebase-key");
 
 async function addParentClient(req, res) {
   try {
@@ -17,8 +18,8 @@ async function addParentClient(req, res) {
         messages.error.required,
         collections.PARENT_CLIENTS
       );
-    const { walletAddress, contractAddress } = body;
-    if (!walletAddress || !contractAddress)
+    const { walletAddress, contractAddress, name } = body;
+    if (!walletAddress || !contractAddress || !name)
       return getResponse(
         res,
         400,
@@ -29,7 +30,6 @@ async function addParentClient(req, res) {
       collections.PARENT_CLIENTS,
       walletAddress
     );
-    console.log(clientSnapshot.exists);
     if (clientSnapshot.exists)
       return getResponse(
         res,
@@ -38,6 +38,7 @@ async function addParentClient(req, res) {
         collections.PARENT_CLIENTS
       );
     const newClient = {
+      [ParentClient.name]: name,
       [ParentClient.APIToken]: generateToken(),
       [ParentClient.walletAddress]: walletAddress,
       [ParentClient.additionalUsers]: [],
@@ -52,13 +53,14 @@ async function addParentClient(req, res) {
       },
       [ParentClient.children]: {},
     };
+
     await setDoc(collections.PARENT_CLIENTS, walletAddress, newClient);
     getResponse(
       res,
       210,
       messages.success.parentClient.add,
       collections.PARENT_CLIENTS,
-      newClient.APIToken
+      newClient
     );
   } catch (error) {
     getResponse(
@@ -95,22 +97,70 @@ async function getParentClient(req, res) {
     if (!clientSnapshot.exists)
       return getResponse(
         res,
-        400,
+        210,
         messages.error.parentClient.notFound,
         collections.PARENT_CLIENTS
       );
     getResponse(
       res,
-      200,
-      clientSnapshot.data(),
-      messages.success.parentClient.exist
+      210,
+      messages.success.parentClient.exist,
+      collections.PARENT_CLIENTS,
+      clientSnapshot.data()
     );
   } catch (error) {
     getResponse(res, 400, messages.error.default, collections.PARENT_CLIENTS);
   }
 }
 
+async function regenerateAPIToken(req, res) {
+  try {
+    const { body } = req;
+    if (!body) return;
+    const { walletAddress } = body;
+
+    if (!walletAddress)
+      return getResponse(
+        res,
+        406,
+        messages.error.required,
+        collections.PARENT_CLIENTS
+      );
+
+    const clientSnapshot = await getSnapshot(
+      collections.PARENT_CLIENTS,
+      walletAddress
+    );
+    if (!clientSnapshot.exists)
+      return getResponse(res, 210, messages.error.parentClient.notFound);
+
+    const clientData = clientSnapshot.data();
+    const newClientData = {
+      ...clientData,
+      [ParentClient.APIToken]: generateToken(),
+    };
+    console.log(newClientData);
+
+    await setDoc(collections.PARENT_CLIENTS, walletAddress, newClientData);
+    getResponse(
+      res,
+      210,
+      messages.success.parentClient.update,
+      collections.PARENT_CLIENTS,
+      newClientData
+    );
+  } catch (error) {
+    getResponse(
+      res,
+      400,
+      messages.error.parentClient.update,
+      collections.PARENT_CLIENTS
+    );
+  }
+}
+
 module.exports = {
   addParentClient,
   getParentClient,
+  regenerateAPIToken,
 };

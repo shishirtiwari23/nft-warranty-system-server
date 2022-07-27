@@ -55,7 +55,7 @@ async function addChildClient(req, res) {
     if (oldChildren.hasOwnProperty(id))
       return getResponse(
         res,
-        400,
+        203,
         messages.error.childClient.exist,
         collections.PARENT_CLIENTS
       );
