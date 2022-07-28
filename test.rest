@@ -48,18 +48,18 @@ Content-Type: application/json
 
 
 ### 
-POST https://nft-warranty-system-server.herokuapp.com/api/add-token
+POST http://localhost:3001/api/add-token
 Content-Type: application/json
 
 {
     
-    "id":"tokddsdsfde123",
-    "URI":"URI123123",
-    "walletAddress":"0x50bF84Dd4fda0DA4B5D221c2DAA37AFa6310128b",
-    "contractAddress":"0xbEc53EBdf78x33B9d8747522s2sdd5781d265A3e87"
+    "id":"token_id_003",
+    "URI":"URI_003",
+    "walletAddress":"0x38009e3f71B52569B064d225f984247c378FCE96",
+    "contractAddress":"Contract_Address_001"
     
 }
-//Done
+//Done  
 
 ###
 

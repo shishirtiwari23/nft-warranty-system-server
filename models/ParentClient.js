@@ -7,6 +7,7 @@ const ParentClient = {
   validity: "validity", //Validity
   plan: "plan", //Plan
   children: "children",
+  allContractAddresses: "allContractAddresses",
 };
 
 const Validity = {

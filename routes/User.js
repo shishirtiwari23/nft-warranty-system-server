@@ -1,5 +1,10 @@
 const express = require("express");
-const { addUser, login, addToken } = require("../controllers/User");
+const {
+  addUser,
+  login,
+  addToken,
+  getUserTokensByClientId,
+} = require("../controllers/User");
 const { authenticateJWT } = require("../utils/functions");
 
 const router = express.Router();
@@ -7,6 +12,7 @@ const router = express.Router();
 router.post("/login", login);
 router.post("/add-user", addUser);
 router.post("/add-token", addToken);
+router.post("/all-nfts", getUserTokensByClientId);
 
 // router.get("/users/:walletAddress", authenticateJWT, getUser);
 

@@ -76,13 +76,13 @@ async function addToken(req, res) {
 
     if (!URI || !id || !contractAddress || !walletAddress)
       return getResponse(res, 400, messages.error.required, collections.USERS);
+    console.log({ URI, id, contractAddress });
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
-    console.log(userSnapshot.data());
     if (!userSnapshot.exists) {
       const newUserData = {
         walletAddress,
         tokens: {
-          [contractAddress]: [{ URI, id }],
+          [contractAddress]: [{ URI, id, contractAddress }],
         },
       };
       await setDoc(collections.USERS, walletAddress, newUserData);
@@ -108,11 +108,13 @@ async function addToken(req, res) {
           messages.error.token.exist,
           collections.USERS
         );
-      console.log(oldData.tokens);
 
       const newTokens = {
         ...oldData.tokens,
-        [contractAddress]: [...oldContractSpecificTokens, { id: id, URI: URI }],
+        [contractAddress]: [
+          ...oldContractSpecificTokens,
+          { id, URI, contractAddress },
+        ],
       };
 
       const newUserData = {
@@ -128,9 +130,54 @@ async function addToken(req, res) {
   }
 }
 
+async function getUserTokensByClientId(req, res) {
+  try {
+    const { body } = req;
+    if (!body)
+      return getResponse(res, 203, messages.error.required, collections.USERS);
+    const { allContractAddresses, walletAddress } = body; //user walletAddress
+    if (!allContractAddresses || !walletAddress)
+      return getResponse(res, 203, messages.error.required, collections.USERS);
+
+    const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
+    if (!userSnapshot.exists)
+      return getResponse(
+        res,
+        203,
+        messages.error.user.exist,
+        collections.USERS
+      );
+    const userData = userSnapshot.data();
+    const filteredAddresses = allContractAddresses?.filter((contractAddress) =>
+      userData?.tokens?.hasOwnProperty(contractAddress)
+    );
+    let filteredTokenList = [];
+
+    for (const contractAddress in userData.tokens) {
+      if (filteredAddresses.includes(contractAddress)) {
+        filteredTokenList = [
+          ...filteredTokenList,
+          ...userData.tokens[contractAddress],
+        ];
+      }
+    }
+
+    getResponse(
+      res,
+      210,
+      messages.success.default,
+      collections.USERS,
+      filteredTokenList
+    );
+  } catch (error) {
+    getResponse(res, 400, messages.error.default, collections.USERS);
+  }
+}
+
 module.exports = {
   addUser,
   login,
+  getUserTokensByClientId,
   addToken,
 };
 

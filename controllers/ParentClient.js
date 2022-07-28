@@ -52,6 +52,7 @@ async function addParentClient(req, res) {
         [Plan.APITokenLimit]: 10,
       },
       [ParentClient.children]: {},
+      [ParentClient.allContractAddresses]: [],
     };
 
     await setDoc(collections.PARENT_CLIENTS, walletAddress, newClient);
@@ -69,6 +70,50 @@ async function addParentClient(req, res) {
       messages.error.parentClient.add,
       collections.PARENT_CLIENTS
     );
+  }
+}
+
+async function getAllContractAddresses(req, res) {
+  try {
+    const { params } = req;
+    console.log(params);
+    if (!params)
+      return getResponse(
+        res,
+        400,
+        messages.error.required,
+        collections.PARENT_CLIENTS
+      );
+    const { walletAddress } = params;
+    if (!walletAddress)
+      return getResponse(
+        res,
+        400,
+        messages.error.required,
+        collections.PARENT_CLIENTS
+      );
+    const clientSnapshot = await getSnapshot(
+      collections.PARENT_CLIENTS,
+      walletAddress
+    );
+    if (!clientSnapshot.exists) {
+      return getResponse(
+        res,
+        400,
+        messages.error.parentClient.exist,
+        collections.PARENT_CLIENTS
+      );
+    }
+    const clientData = clientSnapshot.data();
+    getResponse(
+      res,
+      210,
+      messages.success.default,
+      collections.PARENT_CLIENTS,
+      clientData.allContractAddresses
+    );
+  } catch (errror) {
+    getResponse(res, 400, messages.error.default, collections.PARENT_CLIENTS);
   }
 }
 
@@ -163,4 +208,5 @@ module.exports = {
   addParentClient,
   getParentClient,
   regenerateAPIToken,
+  getAllContractAddresses,
 };

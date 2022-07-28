@@ -1,4 +1,5 @@
 const { messages, collections } = require("../utils/constants");
+const { ParentClient } = require("../models");
 const { getResponse, getSnapshot, setDoc } = require("../utils/functions");
 
 async function addChildClient(req, res) {
@@ -69,9 +70,14 @@ async function addChildClient(req, res) {
         additionalUsers: [],
       },
     };
+    const oldData = parentSnapshot.data();
     const newParentDoc = {
-      ...parentSnapshot.data(),
+      ...oldData,
       children: newChildren,
+      [ParentClient.allContractAddresses]: [
+        ...oldData.allContractAddresses,
+        childContractAddress,
+      ],
     };
     setDoc(collections.PARENT_CLIENTS, parentWalletAddress, newParentDoc);
     getResponse(
