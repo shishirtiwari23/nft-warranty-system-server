@@ -77,43 +77,52 @@ async function addToken(req, res) {
     if (!URI || !id || !contractAddress || !walletAddress)
       return getResponse(res, 400, messages.error.required, collections.USERS);
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
-
-    if (!userSnapshot.exists)
+    console.log(userSnapshot.data());
+    if (!userSnapshot.exists) {
+      const newUserData = {
+        walletAddress,
+        tokens: {
+          [contractAddress]: [{ URI, id }],
+        },
+      };
+      await setDoc(collections.USERS, walletAddress, newUserData);
       return getResponse(
         res,
-        400,
-        messages.error.user.notFound,
+        200,
+        messages.success.token.add,
         collections.USERS
       );
-    const oldData = userSnapshot.data();
-    const oldContractSpecificTokens = oldData.tokens[contractAddress] || [];
+    } else {
+      const oldData = userSnapshot.data();
+      const oldContractSpecificTokens = oldData.tokens[contractAddress] || [];
 
-    oldContractSpecificTokens?.forEach((token) => {
-      if (token.id == id) {
-        duplicate = true;
-      }
-    });
-    if (duplicate)
-      return getResponse(
-        res,
-        400,
-        messages.error.token.exist,
-        collections.USERS
-      );
-    console.log(oldData.tokens);
+      oldContractSpecificTokens?.forEach((token) => {
+        if (token.id == id) {
+          duplicate = true;
+        }
+      });
+      if (duplicate)
+        return getResponse(
+          res,
+          203,
+          messages.error.token.exist,
+          collections.USERS
+        );
+      console.log(oldData.tokens);
 
-    const newTokens = {
-      ...oldData.tokens,
-      [contractAddress]: [...oldContractSpecificTokens, { id: id, URI: URI }],
-    };
+      const newTokens = {
+        ...oldData.tokens,
+        [contractAddress]: [...oldContractSpecificTokens, { id: id, URI: URI }],
+      };
 
-    const newUserData = {
-      ...oldData,
-      tokens: newTokens,
-    };
+      const newUserData = {
+        ...oldData,
+        tokens: newTokens,
+      };
 
-    await setDoc(collections.USERS, walletAddress, newUserData);
-    getResponse(res, 200, messages.success.token.add, collections.USERS);
+      await setDoc(collections.USERS, walletAddress, newUserData);
+      getResponse(res, 200, messages.success.token.add, collections.USERS);
+    }
   } catch (error) {
     getResponse(res, 400, messages.error.token.add, collections.USERS);
   }
