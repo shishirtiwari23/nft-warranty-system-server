@@ -5,6 +5,7 @@ const {
   addToken,
   getUserTokensByClientId,
   getUserCollections,
+  transferOwnership,
 } = require("../controllers/User");
 const { authenticateJWT } = require("../utils/functions");
 
@@ -15,6 +16,7 @@ router.post("/add-user", addUser);
 router.post("/add-token", addToken);
 router.post("/all-nfts", getUserTokensByClientId);
 router.get("/collections/:walletAddress", getUserCollections);
+router.post("/transfer-ownership", transferOwnership);
 
 // router.get("/users/:walletAddress", authenticateJWT, getUser);
 

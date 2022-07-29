@@ -134,6 +134,120 @@ async function addToken(req, res) {
   }
 }
 
+async function transferOwnership(req, res) {
+  try {
+    const { body } = req;
+    let duplicate = false;
+    if (!body)
+      return getResponse(res, 400, messages.error.required, collections.USERS);
+    const {
+      URI,
+      id,
+      contractAddress,
+      receiverWalletAddress,
+      clientWalletAddress,
+      senderWalletAddress,
+    } = body;
+    if (
+      !receiverWalletAddress ||
+      !clientWalletAddress ||
+      !URI ||
+      !id ||
+      !contractAddress ||
+      !senderWalletAddress
+    )
+      return getResponse(res, 400, messages.error.required, collections.USERS);
+    const senderSnapshot = await getSnapshot(
+      collections.USERS,
+      senderWalletAddress
+    );
+    const senderData = senderSnapshot.data();
+    let clientSpecificTokens = senderData.tokens[clientWalletAddress];
+
+    // const hello = clientSpecificTokens.filter((token) => {
+    //   console.log("PEELU", id, contractAddress, token);
+    //   if(token.id == id && token.contractAddress == contractAddress){
+
+    //   }
+
+    // });
+    // console.log(hello);
+    // console.log("hello", hello);
+
+    for (let i = 0; i < clientSpecificTokens.length; i++) {
+      if (
+        clientSpecificTokens[i].id == id &&
+        clientSpecificTokens[i].contractAddress == contractAddress
+      ) {
+        clientSpecificTokens.splice(i, 1);
+      }
+    }
+    const newSenderData = {
+      ...senderData,
+      tokens: {
+        ...senderData.tokens,
+        [clientWalletAddress]: clientSpecificTokens,
+      },
+    };
+    await setDoc(collections.USERS, senderWalletAddress, newSenderData); //This is to remove the token from the sender's database
+
+    const userSnapshot = await getSnapshot(
+      collections.USERS,
+      receiverWalletAddress
+    );
+    if (!userSnapshot.exists) {
+      const newUserData = {
+        walletAddress: receiverWalletAddress,
+        tokens: {
+          [clientWalletAddress]: [{ URI, id, contractAddress }],
+        },
+      };
+      await setDoc(collections.USERS, receiverWalletAddress, newUserData);
+      return getResponse(
+        res,
+        200,
+        messages.success.token.add,
+        collections.USERS
+      );
+    } else {
+      const oldData = userSnapshot.data();
+      const oldContractSpecificTokens =
+        oldData.tokens[clientWalletAddress] || [];
+
+      oldContractSpecificTokens?.forEach((token) => {
+        if (token.id == id && token.contractAddress == contractAddress) {
+          duplicate = true;
+        }
+      });
+      if (duplicate)
+        return getResponse(
+          res,
+          203,
+          messages.error.token.exist,
+          collections.USERS
+        );
+
+      const newTokens = {
+        ...oldData.tokens,
+        [clientWalletAddress]: [
+          ...oldContractSpecificTokens,
+          { id, URI, contractAddress },
+        ],
+      };
+
+      const newUserData = {
+        ...oldData,
+        tokens: newTokens,
+      };
+
+      await setDoc(collections.USERS, receiverWalletAddress, newUserData);
+      getResponse(res, 200, messages.success.token.add, collections.USERS);
+    }
+  } catch (error) {
+    getResponse(res, 400, messages.error.token.add, collections.USERS);
+  }
+}
+
 async function getUserCollections(req, res) {
   try {
     const { params } = req;
@@ -211,6 +325,7 @@ module.exports = {
   getUserTokensByClientId,
   addToken,
   getUserCollections,
+  transferOwnership,
 };
 
 // async function getUser(req, res) {
