@@ -23,4 +23,10 @@ const ChildClient = {
   // children:'children'
 };
 
+const ChildClientCollection = {
+  id: "id",
+  walletAddress: "walletAddress",
+  additionalUsers: "additionalUsers",
+};
+
 module.exports = { ChildClient };

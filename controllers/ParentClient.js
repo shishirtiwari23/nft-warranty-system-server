@@ -7,6 +7,7 @@ const {
 } = require("../utils/functions");
 const { ParentClient, Validity, Plan } = require("../models");
 const { key } = require("firebase-key");
+const db = require("../db");
 
 async function addParentClient(req, res) {
   try {
@@ -178,8 +179,8 @@ async function regenerateAPIToken(req, res) {
     );
     if (!clientSnapshot.exists)
       return getResponse(res, 210, messages.error.parentClient.notFound);
-
     const clientData = clientSnapshot.data();
+    await db.collection(collections.API_KEYS).doc(clientData.APIToken).delete();
     const newClientData = {
       ...clientData,
       [ParentClient.APIToken]: generateToken(),
@@ -187,6 +188,9 @@ async function regenerateAPIToken(req, res) {
     console.log(newClientData);
 
     await setDoc(collections.PARENT_CLIENTS, walletAddress, newClientData);
+    await setDoc(collections.API_KEYS, newClientData.APIToken, {
+      walletAddress,
+    });
     getResponse(
       res,
       210,
@@ -227,9 +231,51 @@ async function getParentBySCID(req, res) {
   }
 }
 
+async function getContractAddress(req, res) {
+  try {
+    const { params } = req;
+    if (!params)
+      return getResponse(
+        res,
+        400,
+        messages.error.required,
+        collections.PARENT_CLIENTS
+      );
+    const { walletAddress } = params;
+    if (!walletAddress)
+      return getResponse(
+        res,
+        400,
+        messages.error.required,
+        collections.PARENT_CLIENTS
+      );
+    const clientSnapshot = await getSnapshot(
+      collections.PARENT_CLIENTS,
+      walletAddress
+    );
+    if (!clientSnapshot.exists)
+      return getResponse(
+        res,
+        203,
+        { message: "The Provided wallet is not a client" },
+        collections.PARENT_CLIENTS
+      );
+    getResponse(
+      res,
+      210,
+      messages.success.default,
+      collections.PARENT_CLIENTS,
+      clientSnapshot.data().contractAddress
+    );
+  } catch (error) {
+    getResponse(res, 400, messages.error.default, collections.PARENT_CLIENTS);
+  }
+}
+
 module.exports = {
   addParentClient,
   getParentClient,
   regenerateAPIToken,
   getAllContractAddresses,
+  getContractAddress,
 };

@@ -1,6 +1,11 @@
 const { messages, collections } = require("../utils/constants");
 const { ParentClient } = require("../models");
-const { getResponse, getSnapshot, setDoc } = require("../utils/functions");
+const {
+  getResponse,
+  getSnapshot,
+  setDoc,
+  generateToken,
+} = require("../utils/functions");
 
 async function addChildClient(req, res) {
   try {
@@ -65,6 +70,7 @@ async function addChildClient(req, res) {
       ...oldChildren,
       [id]: {
         id,
+        APIToken: generateToken(),
         walletAddress: childWalletAddress,
         contractAddress: childContractAddress,
         additionalUsers: [],
