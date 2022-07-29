@@ -18,6 +18,11 @@ const messages = {
         message: "Unable to update ParentClient",
       },
     },
+    APIToken: {
+      invalid: {
+        message: "Invalid APIToken",
+      },
+    },
     childClient: {
       add: {
         message: "Unable to add ChildClient",
@@ -153,6 +158,7 @@ const collections = {
   USERS: "USERS",
   PARENT_CLIENTS: "PARENT_CLIENTS",
   CHILD_CLIENTS: "CHILD_CLIENTS",
+  API_KEYS: "API_KEYS",
 };
 
 module.exports = {

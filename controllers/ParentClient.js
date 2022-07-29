@@ -54,8 +54,9 @@ async function addParentClient(req, res) {
       [ParentClient.children]: {},
       [ParentClient.allContractAddresses]: [],
     };
-
     await setDoc(collections.PARENT_CLIENTS, walletAddress, newClient);
+    await setDoc(collections.API_KEYS, newClient.APIToken, { walletAddress });
+
     getResponse(
       res,
       210,
@@ -76,7 +77,6 @@ async function addParentClient(req, res) {
 async function getAllContractAddresses(req, res) {
   try {
     const { params } = req;
-    console.log(params);
     if (!params)
       return getResponse(
         res,
@@ -201,6 +201,29 @@ async function regenerateAPIToken(req, res) {
       messages.error.parentClient.update,
       collections.PARENT_CLIENTS
     );
+  }
+}
+
+async function getParentBySCID(req, res) {
+  try {
+    const { params } = req;
+    if (!params)
+      return getResponse(
+        res,
+        203,
+        messages.error.required,
+        collections.PARENT_CLIENTS
+      );
+    const { SCID } = params;
+    if (!SCID)
+      return getResponse(
+        res,
+        203,
+        messages.error.required,
+        collections.PARENT_CLIENTS
+      );
+  } catch (error) {
+    getResponse(res, 400, messages.error.default, collections.PARENT_CLIENTS);
   }
 }
 

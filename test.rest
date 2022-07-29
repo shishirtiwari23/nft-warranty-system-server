@@ -53,10 +53,11 @@ Content-Type: application/json
 
 {
     
-    "id":"token_id_003",
-    "URI":"URI_003",
+    "id":"token_id_00762",
+    "URI":"URI_001",
     "walletAddress":"0x38009e3f71B52569B064d225f984247c378FCE96",
-    "contractAddress":"Contract_Address_001"
+    "contractAddress":"0x61Contract3",
+    "APIToken":"-N86kgVXEOkezQmkXg-B"
     
 }
 //Done  

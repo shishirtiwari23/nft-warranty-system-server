@@ -72,17 +72,20 @@ async function addToken(req, res) {
     const { body } = req;
     if (!body)
       return getResponse(res, 400, messages.error.required, collections.USERS);
-    const { URI, id, contractAddress, walletAddress } = body;
+    const { URI, id, contractAddress, walletAddress, APIToken } = body;
 
-    if (!URI || !id || !contractAddress || !walletAddress)
+    if (!URI || !id || !contractAddress || !walletAddress || !APIToken)
       return getResponse(res, 400, messages.error.required, collections.USERS);
-    console.log({ URI, id, contractAddress });
+    const APITokenSnapshot = await getSnapshot(collections.API_KEYS, APIToken);
+    if (!APITokenSnapshot.exists)
+      return getResponse(res, 400, messages.error.APIToken.invalid);
+    const parentWalletAddress = APITokenSnapshot.data().walletAddress;
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
     if (!userSnapshot.exists) {
       const newUserData = {
         walletAddress,
         tokens: {
-          [contractAddress]: [{ URI, id, contractAddress }],
+          [parentWalletAddress]: [{ URI, id, contractAddress }],
         },
       };
       await setDoc(collections.USERS, walletAddress, newUserData);
@@ -94,10 +97,11 @@ async function addToken(req, res) {
       );
     } else {
       const oldData = userSnapshot.data();
-      const oldContractSpecificTokens = oldData.tokens[contractAddress] || [];
+      const oldContractSpecificTokens =
+        oldData.tokens[parentWalletAddress] || [];
 
       oldContractSpecificTokens?.forEach((token) => {
-        if (token.id == id) {
+        if (token.id == id && token.contractAddress == contractAddress) {
           duplicate = true;
         }
       });
@@ -111,7 +115,7 @@ async function addToken(req, res) {
 
       const newTokens = {
         ...oldData.tokens,
-        [contractAddress]: [
+        [parentWalletAddress]: [
           ...oldContractSpecificTokens,
           { id, URI, contractAddress },
         ],
@@ -130,13 +134,54 @@ async function addToken(req, res) {
   }
 }
 
+async function getUserCollections(req, res) {
+  try {
+    const { params } = req;
+    if (!params)
+      return getResponse(res, 203, messages.error.required, collections.USERS);
+    const { walletAddress } = params;
+    if (!walletAddress)
+      return getResponse(res, 203, messages.error.required, collections.USERS);
+    const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
+    if (!userSnapshot.exists)
+      return getResponse(
+        res,
+        400,
+        messages.error.user.exist,
+        collections.USERS
+      );
+    // const clientsSnapshot=await db.collection(collections.PARENT_CLIENTS).docs
+    const userCollections = Object.keys(userSnapshot.data().tokens) || [];
+    const filteredClientsPromises = userCollections.map(
+      async (clientWalletAddress) => {
+        const clientSnapshot = await getSnapshot(
+          collections.PARENT_CLIENTS,
+          clientWalletAddress
+        );
+        return clientSnapshot.data();
+      }
+    );
+    const filteredClients = await Promise.all(filteredClientsPromises);
+    getResponse(
+      res,
+      203,
+      messages.success.default,
+      collections.USERS,
+      filteredClients
+    );
+  } catch (error) {
+    getResponse(res, 400, messages.error.default, collections.USERS);
+  }
+}
+
 async function getUserTokensByClientId(req, res) {
+  //To be precise here we'll get an wallet address of parent which we will be used for filtering from all the token a user own to only specific to a collection
   try {
     const { body } = req;
     if (!body)
       return getResponse(res, 203, messages.error.required, collections.USERS);
-    const { allContractAddresses, walletAddress } = body; //user walletAddress
-    if (!allContractAddresses || !walletAddress)
+    const { parentWalletAddress, walletAddress } = body; //user walletAddress
+    if (!parentWalletAddress || !walletAddress)
       return getResponse(res, 203, messages.error.required, collections.USERS);
 
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
@@ -147,21 +192,7 @@ async function getUserTokensByClientId(req, res) {
         messages.error.user.exist,
         collections.USERS
       );
-    const userData = userSnapshot.data();
-    const filteredAddresses = allContractAddresses?.filter((contractAddress) =>
-      userData?.tokens?.hasOwnProperty(contractAddress)
-    );
-    let filteredTokenList = [];
-
-    for (const contractAddress in userData.tokens) {
-      if (filteredAddresses.includes(contractAddress)) {
-        filteredTokenList = [
-          ...filteredTokenList,
-          ...userData.tokens[contractAddress],
-        ];
-      }
-    }
-
+    const filteredTokenList = userSnapshot.data().tokens[parentWalletAddress];
     getResponse(
       res,
       210,
@@ -179,6 +210,7 @@ module.exports = {
   login,
   getUserTokensByClientId,
   addToken,
+  getUserCollections,
 };
 
 // async function getUser(req, res) {
