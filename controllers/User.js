@@ -283,7 +283,7 @@ async function issueComplaint(req, res) {
           tokenId,
           walletAddress,
           description,
-          status: 1,
+          status: 0,
         },
       ],
     };
