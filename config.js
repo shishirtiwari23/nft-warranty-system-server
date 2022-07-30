@@ -33,7 +33,7 @@ const firebaseConfig = {
 };
 
 module.exports = {
-  port: PORT,
+  port: PORT || 3001,
   host: HOST,
   hostUrl: HOST_URL,
   firebaseConfig,
