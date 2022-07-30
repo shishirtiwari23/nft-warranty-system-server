@@ -192,7 +192,6 @@ async function regenerateAPIToken(req, res) {
       ...clientData,
       [ParentClient.APIToken]: generateToken(),
     };
-    console.log(newClientData);
 
     await setDoc(collections.PARENT_CLIENTS, walletAddress, newClientData);
     await setDoc(collections.API_KEYS, newClientData.APIToken, {

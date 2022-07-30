@@ -16,13 +16,13 @@ async function addUser(req, res) {
       // body can't be empty
       return getResponse(res, 500, messages.error.user.add, collections.USERS);
     const { walletAddress } = body;
-
-    if (!walletAddress)
+    if (!walletAddress) {
       // body should contain both walletAddress and contractAddress
       return getResponse(res, 500, messages.error.required, collections.USERS);
+    }
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
 
-    if (userSnapshot.exists)
+    if (userSnapshot.exists) {
       // checking if user already exists
       return getResponse(
         res,
@@ -30,7 +30,7 @@ async function addUser(req, res) {
         messages.error.user.exist,
         collections.USERS
       );
-
+    }
     const newUser = {
       walletAddress,
       tokens: {},
@@ -47,11 +47,9 @@ async function login(req, res) {
     const {
       body: { walletAddress },
     } = req;
-    console.log(walletAddress);
     if (!walletAddress)
       return getResponse(res, 400, messages.error.required, collections.USERS);
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress); // Why do i have to put an await here
-    console.log("snapshot");
     if (!userSnapshot.exists)
       return getResponse(
         res,
@@ -60,11 +58,6 @@ async function login(req, res) {
         collections.USERS
       );
 
-    const newUser = {
-      walletAddress,
-      tokens: {},
-    };
-    await setDoc(collections.USERS, walletAddress, newUser);
     getResponse(res, 210, messages.success.default, collections.USERS, {
       user: userSnapshot.data(),
       authToken: signToken({ walletAddress }),
@@ -172,16 +165,6 @@ async function transferOwnership(req, res) {
     const senderData = senderSnapshot.data();
     let clientSpecificTokens = senderData.tokens[clientWalletAddress];
 
-    // const hello = clientSpecificTokens.filter((token) => {
-    //   console.log("PEELU", id, contractAddress, token);
-    //   if(token.id == id && token.contractAddress == contractAddress){
-
-    //   }
-
-    // });
-    // console.log(hello);
-    // console.log("hello", hello);
-
     for (let i = 0; i < clientSpecificTokens.length; i++) {
       if (
         clientSpecificTokens[i].id == id &&
@@ -261,7 +244,6 @@ async function issueComplaint(req, res) {
     const { body } = req;
     if (!body)
       return getResponse(res, 203, messages.error.required, collections.USERS);
-    console.log("001");
     const {
       description,
       tokenId,
@@ -279,7 +261,6 @@ async function issueComplaint(req, res) {
       !contractAddress
     )
       return getResponse(res, 203, messages.error.required, collections.USERS);
-    console.log("002");
 
     //To store the complaint in parentClient
     const clientSnapshot = await getSnapshot(
@@ -288,7 +269,6 @@ async function issueComplaint(req, res) {
     );
     if (!clientSnapshot.exists)
       return getResponse(res, 210, messages.error.parentClient.notFound);
-    console.log("003");
 
     const oldClientData = clientSnapshot.data();
     let oldIssues = oldClientData?.issues;
@@ -307,14 +287,12 @@ async function issueComplaint(req, res) {
         },
       ],
     };
-    console.log("004");
 
     await setDoc(
       collections.PARENT_CLIENTS,
       parentWalletAddress,
       newClientData
     );
-    console.log("005");
 
     //To Store the complaint in user collection
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
@@ -326,7 +304,6 @@ async function issueComplaint(req, res) {
         collections.USERS
       );
     const oldTokens = userSnapshot.data().tokens;
-    console.log("006");
 
     let clientSpecificTokens = oldTokens[parentWalletAddress];
     for (let i = 0; i < clientSpecificTokens.length; i++) {
@@ -373,7 +350,6 @@ async function updateStatus(req, res) {
     const { walletAddress, parentWalletAddress, complaintId, newStatus } = body;
     if (!walletAddress || !parentWalletAddress || !complaintId || !newStatus)
       return getResponse(res, 203, messages.error.required, collections.USERS);
-    console.log("001");
     //To store the complaint in parentClient
     const clientSnapshot = await getSnapshot(
       collections.PARENT_CLIENTS,
@@ -381,8 +357,6 @@ async function updateStatus(req, res) {
     );
     if (!clientSnapshot.exists)
       return getResponse(res, 210, messages.error.parentClient.notFound);
-    console.log("002");
-
     const oldClientData = clientSnapshot.data();
     let oldIssues = oldClientData?.issues;
     if (!oldIssues) oldIssues = [];
@@ -394,20 +368,17 @@ async function updateStatus(req, res) {
         };
       }
     }
-    console.log("003");
 
     const newClientData = {
       ...oldClientData,
       issues: oldIssues,
     };
-    console.log("004");
 
     await setDoc(
       collections.PARENT_CLIENTS,
       parentWalletAddress,
       newClientData
     );
-    console.log("005");
 
     //To Store the complaint in user collection
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
@@ -419,7 +390,6 @@ async function updateStatus(req, res) {
         collections.USERS
       );
     const oldTokens = userSnapshot.data().tokens;
-    console.log("006");
 
     let clientSpecificTokens = oldTokens[parentWalletAddress];
     for (let i = 0; i < clientSpecificTokens.length; i++) {
@@ -433,7 +403,6 @@ async function updateStatus(req, res) {
         };
       }
     }
-    console.log(clientSpecificTokens);
     const newUserData = {
       ...userSnapshot.data(),
       tokens: {
@@ -536,139 +505,3 @@ module.exports = {
   transferOwnership,
   updateStatus,
 };
-
-// async function getUser(req, res) {
-//   try {
-//     const {
-//       params: { walletAddress },
-//     } = req;
-//     const userSnapshot = await getSnapshot(collections.USERS, walletAddress); // Why do i have to put an await here
-//     if (!userSnapshot.exists)
-//       return getResponse(
-//         res,
-//         404,
-//         messages.error.user.notFound,
-//         collections.USERS
-//       );
-//     getResponse(res, 200, userSnapshot.data());
-//   } catch (error) {
-//     getResponse(res, 400, messages.error.user.get, collections.USERS);
-//   }
-// }
-
-// async function addUser(req, res, next) {
-//   try {
-//     const data = req.body;
-//     await db.firestore().collection(collections.USERS).doc().set(data);
-//     res
-//       .status(400)
-//       .json(getMessage(messages.success.user.add, collections.USERS));
-//   } catch (error) {
-//     res
-//       .status(400)
-//       .json(getMessage(messages.error.user.add, collections.USERS));
-//   }
-// }
-
-// async function getAllUsers(req, res, next) {
-//   try {
-//     const users_ref = await db.firestore().collection(collections.USERS);
-//     const users_snapshot = await users_ref.get();
-//     if (users_snapshot.empty) {
-//       return res.status(200).json([]);
-//     } else {
-//       const users = users_snapshot.docs?.map((doc) => {
-//         doc = doc?.data();
-//         const user = new User(doc?.id, doc?.walletAddress, doc?.name);
-//         return user;
-//       });
-
-//       res.status(200).json(users);
-//     }
-//   } catch (error) {
-//     res.status(400).json(getMessage(messages.error.default));
-//   }
-// }
-
-// async function getUser(req, res, next) {
-//   try {
-//     const { id } = req.params;
-//     if (!id)
-//       return res
-//         .status(404)
-//         .json(getMessage(messages.error.user.id.undefined, collections.USERS));
-//     const users_ref = db.firestore().collection(collections.USERS);
-//     let users_snapshot = await users_ref.where("id", "==", id).get();
-//     if (users_snapshot.exists) {
-//       //Ye nahi kaam karra hai
-//       return res
-//         .status(404)
-//         .json(getMessage(messages.error.user.notFound, collections.USERS));
-//     }
-//     const users = users_snapshot.docs.map((user) => {
-//       return user?.data();
-//     });
-//     console.log(users);
-//     res.status(200).json(users);
-
-//     //why below message is not getting sent
-//   } catch (error) {
-//     res.status(500).json(error.message);
-//   }
-// }
-
-// async function updateUser(req, res, next) {
-//   try {
-//     const {
-//       body: data,
-//       params: { id },
-//     } = req;
-//     const user_docs_ref = await db
-//       .firestore()
-//       .collection(collections.USERS)
-//       .where("id", "==", id)
-//       .get();
-//     user_docs_ref.forEach((doc) => {
-//       doc.set(data);
-//     });
-//     // });
-//     return res
-//       .status(400)
-//       .json(getMessage(messages.success.user.update, collections.USERS));
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json(getMessage(messages.error.user.update, collections.USERS));
-//   }
-// }
-
-// async function updateUser(req, res, next) {
-//   try {
-//     const {
-//       body: data,
-//       params: { id },
-//     } = req;
-//     const user_snapshot = await db
-//       .firestore()
-//       .collection(collections.USERS)
-//       .doc("6RCIANXpnSdDwnyKHnuF");
-//     await user_snapshot.update(data);
-//     console.log();
-//     // const user_snapshot = db
-//     //   .firestore()
-//     //   .collection(collections.USERS)
-//     //   .where("id", "==", id);
-//     // user_snapshot.docs.map((doc) => console.log(doc.data()));
-//     // console.log(id);
-//     // await user_snapshot.map((docRef) => {
-//     //   return docRef.update(data);
-//     // });
-//     return res
-//       .status(400)
-//       .json(getMessage(messages.success.user.update, collections.USERS));
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json(getMessage(messages.error.user.update, collections.USERS));
-//   }
-// }

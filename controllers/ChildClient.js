@@ -26,12 +26,6 @@ async function addChildClient(req, res) {
         contractAddress: childContractAddress,
       },
     } = body;
-    console.log(
-      parentWalletAddress,
-      id,
-      childWalletAddress,
-      childContractAddress
-    );
     if (
       !parentWalletAddress ||
       !id ||
