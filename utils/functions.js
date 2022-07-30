@@ -9,7 +9,9 @@ function generateToken() {
 }
 
 function signToken(obj) {
-  return jwt.sign(obj, config.JWTAuthSecretToken);
+  return jwt.sign(obj, config.JWTAuthSecretToken, {
+    expiresIn: "7d",
+  });
 }
 
 async function getSnapshot(collection, id) {

@@ -7,16 +7,17 @@ const {
   getUserCollections,
   transferOwnership,
 } = require("../controllers/User");
+const { auth } = require("../middlewares/auth");
 const { authenticateJWT } = require("../utils/functions");
 
 const router = express.Router();
 
 router.post("/login", login);
-router.post("/add-user", addUser);
-router.post("/add-token", addToken);
-router.post("/all-nfts", getUserTokensByClientId);
-router.get("/collections/:walletAddress", getUserCollections);
-router.post("/transfer-ownership", transferOwnership);
+router.post("/add-user", auth, addUser);
+router.post("/add-token", auth, addToken);
+router.post("/all-nfts", auth, getUserTokensByClientId);
+router.get("/collections/:walletAddress", auth, getUserCollections);
+router.post("/transfer-ownership", auth, transferOwnership);
 
 // router.get("/users/:walletAddress", authenticateJWT, getUser);
 

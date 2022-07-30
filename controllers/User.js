@@ -47,9 +47,11 @@ async function login(req, res) {
     const {
       body: { walletAddress },
     } = req;
+    console.log(walletAddress);
     if (!walletAddress)
       return getResponse(res, 400, messages.error.required, collections.USERS);
     const userSnapshot = await getSnapshot(collections.USERS, walletAddress); // Why do i have to put an await here
+    console.log("snapshot");
     if (!userSnapshot.exists)
       return getResponse(
         res,
@@ -57,7 +59,13 @@ async function login(req, res) {
         messages.error.user.notFound,
         collections.USERS
       );
-    getResponse(res, 200, {
+
+    const newUser = {
+      walletAddress,
+      tokens: {},
+    };
+    await setDoc(collections.USERS, walletAddress, newUser);
+    getResponse(res, 210, messages.success.default, collections.USERS, {
       user: userSnapshot.data(),
       authToken: signToken({ walletAddress }),
     });
