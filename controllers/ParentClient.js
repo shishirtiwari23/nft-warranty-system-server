@@ -54,6 +54,7 @@ async function addParentClient(req, res) {
       },
       [ParentClient.children]: {},
       [ParentClient.allContractAddresses]: [],
+      [ParentClient.issues]: [],
     };
     await setDoc(collections.PARENT_CLIENTS, walletAddress, newClient);
     await setDoc(collections.API_KEYS, newClient.APIToken, { walletAddress });
@@ -162,7 +163,13 @@ async function getParentClient(req, res) {
 async function regenerateAPIToken(req, res) {
   try {
     const { body } = req;
-    if (!body) return;
+    if (!body)
+      return getResponse(
+        res,
+        406,
+        messages.error.required,
+        collections.PARENT_CLIENTS
+      );
     const { walletAddress } = body;
 
     if (!walletAddress)

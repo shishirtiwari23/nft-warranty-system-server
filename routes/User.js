@@ -6,6 +6,8 @@ const {
   getUserTokensByClientId,
   getUserCollections,
   transferOwnership,
+  issueComplaint,
+  updateStatus,
 } = require("../controllers/User");
 const { authenticateJWT } = require("../utils/functions");
 
@@ -17,6 +19,8 @@ router.post("/add-token", addToken);
 router.post("/all-nfts", getUserTokensByClientId);
 router.get("/collections/:walletAddress", getUserCollections);
 router.post("/transfer-ownership", transferOwnership);
+router.post("/issue-complaint", issueComplaint);
+router.post("/update-status", updateStatus);
 
 // router.get("/users/:walletAddress", authenticateJWT, getUser);
 

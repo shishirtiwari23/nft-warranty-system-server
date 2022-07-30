@@ -248,6 +248,205 @@ async function transferOwnership(req, res) {
   }
 }
 
+async function issueComplaint(req, res) {
+  try {
+    const { body } = req;
+    if (!body)
+      return getResponse(res, 203, messages.error.required, collections.USERS);
+    console.log("001");
+    const {
+      description,
+      tokenId,
+      walletAddress,
+      parentWalletAddress,
+      complaintId,
+      contractAddress,
+    } = body;
+    if (
+      !description ||
+      !tokenId ||
+      !walletAddress ||
+      !parentWalletAddress ||
+      !complaintId ||
+      !contractAddress
+    )
+      return getResponse(res, 203, messages.error.required, collections.USERS);
+    console.log("002");
+
+    //To store the complaint in parentClient
+    const clientSnapshot = await getSnapshot(
+      collections.PARENT_CLIENTS,
+      parentWalletAddress
+    );
+    if (!clientSnapshot.exists)
+      return getResponse(res, 210, messages.error.parentClient.notFound);
+    console.log("003");
+
+    const oldClientData = clientSnapshot.data();
+    let oldIssues = oldClientData?.issues;
+    if (!oldIssues) oldIssues = [];
+    const newClientData = {
+      ...oldClientData,
+      issues: [
+        ...oldIssues,
+        {
+          complaintId,
+          contractAddress,
+          tokenId,
+          walletAddress,
+          description,
+          status: 0,
+        },
+      ],
+    };
+    console.log("004");
+
+    await setDoc(
+      collections.PARENT_CLIENTS,
+      parentWalletAddress,
+      newClientData
+    );
+    console.log("005");
+
+    //To Store the complaint in user collection
+    const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
+    if (!userSnapshot.exists)
+      return getResponse(
+        res,
+        400,
+        messages.error.user.exist,
+        collections.USERS
+      );
+    const oldTokens = userSnapshot.data().tokens;
+    console.log("006");
+
+    let clientSpecificTokens = oldTokens[parentWalletAddress];
+    for (let i = 0; i < clientSpecificTokens.length; i++) {
+      if (
+        clientSpecificTokens[i].id == tokenId &&
+        clientSpecificTokens[i].contractAddress == contractAddress
+      ) {
+        clientSpecificTokens[i] = {
+          ...clientSpecificTokens[i],
+          issue: {
+            status: 0,
+            description,
+            complaintId,
+          },
+        };
+      }
+    }
+    const newUserData = {
+      ...userSnapshot.data(),
+      tokens: {
+        ...oldTokens,
+        [parentWalletAddress]: clientSpecificTokens,
+      },
+    };
+
+    await setDoc(collections.USERS, walletAddress, newUserData);
+
+    return getResponse(
+      res,
+      210,
+      messages.success.default,
+      collections.PARENT_CLIENTS
+    );
+  } catch (error) {
+    return getResponse(res, 400, messages.error.default, collections.USERS);
+  }
+}
+
+async function updateStatus(req, res) {
+  try {
+    const { body } = req;
+    if (!body)
+      return getResponse(res, 203, messages.error.required, collections.USERS);
+    const { walletAddress, parentWalletAddress, complaintId, newStatus } = body;
+    if (!walletAddress || !parentWalletAddress || !complaintId || !newStatus)
+      return getResponse(res, 203, messages.error.required, collections.USERS);
+    console.log("001");
+    //To store the complaint in parentClient
+    const clientSnapshot = await getSnapshot(
+      collections.PARENT_CLIENTS,
+      parentWalletAddress
+    );
+    if (!clientSnapshot.exists)
+      return getResponse(res, 210, messages.error.parentClient.notFound);
+    console.log("002");
+
+    const oldClientData = clientSnapshot.data();
+    let oldIssues = oldClientData?.issues;
+    if (!oldIssues) oldIssues = [];
+    for (let i = 0; i < oldIssues.length; i++) {
+      if (oldIssues[i].complaintId == complaintId) {
+        oldIssues[i] = {
+          ...oldIssues[i],
+          status: newStatus,
+        };
+      }
+    }
+    console.log("003");
+
+    const newClientData = {
+      ...oldClientData,
+      issues: oldIssues,
+    };
+    console.log("004");
+
+    await setDoc(
+      collections.PARENT_CLIENTS,
+      parentWalletAddress,
+      newClientData
+    );
+    console.log("005");
+
+    //To Store the complaint in user collection
+    const userSnapshot = await getSnapshot(collections.USERS, walletAddress);
+    if (!userSnapshot.exists)
+      return getResponse(
+        res,
+        400,
+        messages.error.user.exist,
+        collections.USERS
+      );
+    const oldTokens = userSnapshot.data().tokens;
+    console.log("006");
+
+    let clientSpecificTokens = oldTokens[parentWalletAddress];
+    for (let i = 0; i < clientSpecificTokens.length; i++) {
+      if (clientSpecificTokens[i].issue.complaintId == complaintId) {
+        clientSpecificTokens[i] = {
+          ...clientSpecificTokens[i],
+          issue: {
+            ...clientSpecificTokens[i].issue,
+            status: newStatus,
+          },
+        };
+      }
+    }
+    console.log(clientSpecificTokens);
+    const newUserData = {
+      ...userSnapshot.data(),
+      tokens: {
+        ...oldTokens,
+        [parentWalletAddress]: clientSpecificTokens,
+      },
+    };
+
+    await setDoc(collections.USERS, walletAddress, newUserData);
+
+    return getResponse(
+      res,
+      210,
+      messages.success.default,
+      collections.PARENT_CLIENTS
+    );
+  } catch (error) {
+    return getResponse(res, 400, messages.error.default, collections.USERS);
+  }
+}
+
 async function getUserCollections(req, res) {
   try {
     const { params } = req;
@@ -325,7 +524,9 @@ module.exports = {
   getUserTokensByClientId,
   addToken,
   getUserCollections,
+  issueComplaint,
   transferOwnership,
+  updateStatus,
 };
 
 // async function getUser(req, res) {
