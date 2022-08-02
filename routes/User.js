@@ -14,7 +14,7 @@ const { authenticateJWT } = require("../utils/functions");
 
 const router = express.Router();
 
-router.post("/login", auth, login);
+router.post("/login", login);
 router.post("/add-user", auth, addUser);
 router.post("/add-token", auth, addToken);
 router.post("/all-nfts", auth, getUserTokensByClientId);
